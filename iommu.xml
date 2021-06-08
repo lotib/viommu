@@ -1,0 +1,67 @@
+<domain type='kvm'>
+  <name>ubuntu</name>
+  <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
+  <memory unit='KiB'>4194304</memory>
+  <currentMemory unit='KiB'>4194304</currentMemory>
+  <vcpu placement='static'>2</vcpu>
+  <os>
+    <type arch='x86_64' machine='q35'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <features>
+    <ioapic driver='qemu'/>
+  </features>
+  <cpu mode='custom' match='exact' check='none'>
+    <model fallback='forbid'>qemu64</model>
+  </cpu>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='qcow2'/>
+      <source file='/var/lib/libvirt/images/ubuntu-20.04-server-cloudimg-amd64-disk-kvm.img'/>
+      <target dev='vda' bus='virtio'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/user-data.img'/>
+      <target dev='vdb' bus='virtio'/>
+    </disk>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <controller type='pci' index='0' model='pcie-root'/>
+    <controller type='usb' index='0' model='none'/>
+    <controller type='sata' index='0'>
+    <address type='pci' domain='0x0000' bus='0x00' slot='0x1f' function='0x2'/>
+    </controller>
+    <interface type='vhostuser'>
+      <source type='unix' path='/var/run/vhost/vhost-user-iommu-socket-1' mode='server'/>
+      <model type='virtio'/>
+      <driver name='vhost' iommu='on' >
+      </driver>
+    </interface>
+    <!-- <interface type='vhostuser'>
+      <source type='unix' path='/var/run/vhost/vhost-user-socket-2' mode='server'/>
+      <model type='virtio'/>
+      <driver name='vhost' >
+      </driver>
+    </interface> -->
+    <interface type='bridge'>
+	<source bridge='virbr0'/>
+	<model type='virtio'/>
+    </interface>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
+    <serial type='pty'>
+      <target port='0'/>
+    </serial>
+    <console type='pty'>
+      <target type='serial' port='0'/>
+    </console>
+    <memballoon model='none'/>
+    <iommu model='intel'>
+      <driver intremap='on' iotlb='on'/>
+    </iommu>
+  </devices>
+</domain>
